@@ -16,4 +16,7 @@ for i in range(N):
         erased += 1
     stk.append(cmd)
 
+for i in range(erased, K):
+    stk.pop()
+
 print(''.join(stk))

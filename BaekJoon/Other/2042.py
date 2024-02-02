@@ -1,53 +1,44 @@
 import sys
+import math
 input = sys.stdin.readline
 
+def update(i: int, x: int, n: int, s: int, e: int):
+    if e < i or i < s :
+        return tree[n]
+    if i <= s and e <= i:
+        tree[n] = x
+        return tree[n]
+    m = (s+e)//2
+    update_l = update(i, x, 2*n, s, m)
+    update_r = update(i, x, 2*n+1, m+1, e)
+    tree[n] = min(update_l, update_r)
+    return tree[n]
 
-N, M, K = map(int, input().split())
+def query(qs: int, qe: int, n: int, s: int, e: int):
+    if qe < s or e < qs :
+        return inf
+    if qs <= s and e <= qe:
+        return tree[n]
+    m = (s+e)//2
+    query_l = query(qs, qe, 2*n, s, m)
+    query_r = query(qs, qe, 2*n+1, m+1, e)
+    mn = min(query_l, query_r)
+    return mn
 
-tree = [0 for i in range(4*N)]
-lst = []
+inf = int(1e10)
+N = int(input())
+mnpow = 2**(math.ceil(math.log2(N)))
+mxpow = mnpow*2
+tree = [inf] * mxpow
+lst = [*map(int, input().split())]
 for i in range(N):
-    lst.append(int(input()))
+    tree[mnpow+i] = lst[i]
+for i in range(mnpow-1, 0, -1):
+    tree[i] = min(tree[2*i], tree[2*i+1])
 
-
-def segTree(idx, start, end):
-    if start == end:
-        tree[idx] = lst[start]
-        return tree[idx]
-
-    mid = (start + end)//2
-    left = segTree(idx*2, start, mid)
-    right = segTree(idx*2+1, mid+1, end)
-    tree[idx] = left + right
-    return tree[idx]
-
-
-def update(start, end, curidx, idx, value):
-    tree[curidx] += value
-    if start == end:
-        return
-    mid = (start + end)//2
-    if idx <= mid:
-        update(start, mid, curidx*2, idx, value)
+for M in range(int(input())):
+    cmd, i, j = map(int, input().split())
+    if cmd == 1:
+        update(i-1, j, 1, 0, mnpow-1)
     else:
-        update(mid+1, end, curidx*2+1, idx, value)
-
-
-def calc(sumstart, sumend, curidx, leftidx, rightidx):
-    if sumstart > rightidx or sumend < leftidx:
-        return 0
-    if sumstart <= leftidx and rightidx <= sumend:
-        return tree[curidx]
-    mid = (leftidx + rightidx)//2
-    return calc(sumstart, sumend, curidx*2, leftidx, mid) + calc(sumstart, sumend, curidx*2+1, mid+1, rightidx)
-
-
-segTree(1, 0, N-1)
-
-for i in range(M+K):
-    a, b, c = map(int, input().split())
-    if a == 1:
-        update(0, N-1, 1, b-1, c-lst[b-1])
-        lst[b-1] = c
-    else:
-        print(calc(b-1, c-1, 1, 0, N-1))
+        print(query(i-1, j-1, 1, 0, mnpow-1))
