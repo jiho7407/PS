@@ -7,7 +7,7 @@ right = N-1
 ans = int(1e10)
 anslst = [0, N-1]
 
-while left<right:
+while left < right:
     cmd = lst[left] + lst[right]
     if abs(cmd) < ans:
         ans = abs(cmd)
