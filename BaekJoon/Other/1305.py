@@ -13,4 +13,4 @@ for i in range(1, N):
         pi[i] += j
 
 print(pi)
-print(N - pi[N-1])
+print(N - pi[N-1])  

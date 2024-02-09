@@ -30,6 +30,8 @@ for TC in range(int(input())):
     pos = False
 
     while True:
+        if idx >= len(cmd):
+            break
         if "end" in curdct.keys():
             if cmd[idx:] in teams:
                 pos = True
