@@ -1,5 +1,7 @@
 .exe
 build
 tempCodeRunnerFile
+tempCodeRunnerFile.cpp
+tempCodeRunnerFile.py
 .vscode
 test.py
