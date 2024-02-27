@@ -8,7 +8,7 @@ void fastio(){
 }
 
 int V, E;
-vector<vector<int>> links;
+vector<int> links[10010];
 int visitidx;
 int visited[10010];
 bool ATP[10010];
@@ -33,7 +33,6 @@ int dfs(int a, bool root){
 
 int main(){
     cin >> V >> E;
-    links.resize(V+1);
     for(int i = 0; i<E; i++){
         int s, e;
         cin >> s >> e;
