@@ -7,15 +7,6 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-int main(){
-
-    return 0;
-}
-
-// 함수들
-
-// FFT
-
 const double PI = acos(-1);
 typedef complex<double> cpd;
 
@@ -69,3 +60,40 @@ vector<cpd> mul(vector<cpd> &A, vector<cpd> &B){
     return A;
 }
 
+const int mx = 1000005;
+int N;
+vector<cpd> A, B, C;
+
+bool era[mx];
+
+void erathos(){
+    fill(era, era+mx, true);
+    era[0] = false, era[1] = false;
+    for(int i = 2; i*i<=mx; i++){
+        if(era[i]){
+            for(int j = i*i; j<=mx; j+=i){
+                era[j] = false;
+            }
+        }
+    }
+}
+
+int main(){
+    fastio();
+    erathos();
+    A.resize(mx);
+    B.resize(mx);
+    for(int i = 2; i<=mx; i++){
+        if(era[i]){
+            A[i] = cpd(1, 0);
+            if(i*2<=mx) B[2*i] = cpd(1, 0);
+        }
+    }
+    C = mul(A, B);
+    cin >> N;
+    int cmd;
+    for(int i = 0; i<N; i++){
+        cin >> cmd;
+        cout << round(C[cmd].real()) << "\n";
+    }
+}
