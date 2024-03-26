@@ -1,4 +1,5 @@
 import sys
+sys.setrecursionlimit(int(1e5)+10)
 
 input = sys.stdin.readline
 
@@ -43,7 +44,4 @@ def dfs(cur, par):
 
 
 dfs(0, -1)
-print(sum(DP[0][0:2]))
-
-for i in range(N):
-    print(DP[i])
+print(sum(DP[0][0:2]) % mod)
