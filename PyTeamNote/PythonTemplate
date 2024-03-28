@@ -1,0 +1,7 @@
+import sys
+input = sys.stdin.readline
+
+for TC in range(int(input())):
+    N = int(input())
+    N, M = map(int, input().split())
+    lst = [*map(int, input().split())]
