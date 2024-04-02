@@ -7,7 +7,13 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
+void solve(){
+
+    return;
+}
+
 int main(){
     fastio();
+    solve();
     return 0;
 }
