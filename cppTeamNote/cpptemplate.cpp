@@ -2,6 +2,8 @@
 using namespace std;
 
 typedef long long ll;
+typedef pair<int, int> pii;
+
 
 void fastio(){
     cin.tie(0);
@@ -16,6 +18,10 @@ void solve(){
 
 int main(){
     fastio();
-    solve();
+    int tc = 1;
+    // cin >> tc;
+    while(tc--){
+        solve();
+    }
     return 0;
 }

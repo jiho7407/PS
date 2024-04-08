@@ -1,7 +1,15 @@
 import sys
 input = sys.stdin.readline
+# sys.setrecursionlimit(10**6)
 
-for TC in range(int(input())):
+
+def solve():
     N = int(input())
     N, M = map(int, input().split())
     lst = [*map(int, input().split())]
+    lst = lst
+    return
+
+
+for TC in range(int(input())):
+    solve()
