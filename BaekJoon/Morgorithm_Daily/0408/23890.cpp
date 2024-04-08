@@ -8,9 +8,14 @@ void fastio(){
     cout.tie(0);
     ios_base::sync_with_stdio(false);
 }
+ll R;
 
 void solve(){
-
+    cin >> R;
+    ll x=1, y=R-1LL;
+    while(x*x + y*y < R*R) x++;
+    x--;
+    cout << x << " " << y << '\n';
     return;
 }
 
