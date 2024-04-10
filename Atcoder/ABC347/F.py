@@ -26,9 +26,4 @@ lst.sort(reverse=True)
 dp = [[-1 for _ in range(4)] for _ in range(len(lst)+1)]
 dp[0] = 0
 
-for i in range(1, len(lst)+1):
-    x, y, z = lst[i]
-    for j in range(3, 0, -1):
-        if dp[y][j-1] == -1:
-            continue
-        dp[y+M][j] = max(dp[y+M][j], dp[y][j] + x)
+# for i in range(1, len(lst)+1):
