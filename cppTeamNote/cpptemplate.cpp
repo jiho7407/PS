@@ -12,7 +12,7 @@ void fastio(){
 }
 
 void solve(){
-
+    
     return;
 }
 
