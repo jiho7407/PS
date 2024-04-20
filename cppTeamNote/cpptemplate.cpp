@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
+#define ll long long
+#define rep(i,l,r)for(ll i=(l);i<(r);i++)
 using namespace std;
-
-typedef long long ll;
 typedef pair<int, int> pii;
 
 
