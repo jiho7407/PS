@@ -11,15 +11,18 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
+// 이분 매칭
+// 호프크로프트 카프 알고리즘 사용
+// 시간 복잡도 O(Esqrt(V))
 
-const int MAXN = 10000, MAXM = 10000;
+const int MAXN = 200000, MAXM = 400000; // 0-based로 사용. 그렇지 않을시 match(N+1) 조심하기.
 struct BipartiteMatching{
-    vector<int> graph[MAXN];
-    int dis[MAXN], L[MAXN], R[MAXM];
+    vector<pii> graph[MAXN];
+    int dis[MAXN], L[MAXN], R[MAXM], vis[MAXN];
     void clear(){ rep(i, 0, MAXN) graph[i].clear(); }
-    void addEdge(int l, int r){ graph[l].push_back(r); }
+    void addEdge(int l, int r, int c){ graph[l].push_back({r, c}); }
 
-    bool bfs(int n){
+    bool bfs(int n, int cost){
         queue<int> q;
         bool ok = 0;
         memset(dis, 0, sizeof(dis));
@@ -31,7 +34,8 @@ struct BipartiteMatching{
         }
         while(!q.empty()){
             int l = q.front(); q.pop();
-            for(auto &r : graph[l]){
+            for(auto [r, c] : graph[l]){
+                if(c > cost) continue;
                 if(R[r] == -1) ok = 1;
                 else if(!dis[R[r]]){
                     dis[R[r]] = dis[l] + 1;
@@ -42,9 +46,12 @@ struct BipartiteMatching{
         return ok;
     }
 
-    bool dfs(int l){
-        for(auto &r : graph[l]){
-            if(R[r] == -1 || (dis[R[r]] == dis[l] + 1 && dfs(R[r]))){
+    bool dfs(int l, int cost){
+        if(vis[l]) return 0;
+        vis[l] = 1;
+        for(auto [r, c] : graph[l]){
+            if(c > cost) continue;
+            if(R[r] == -1 || (!vis[R[r]] && dis[R[r]] == dis[l] + 1 && dfs(R[r], cost))){
                 L[l] = r;
                 R[r] = l;
                 return true;
@@ -53,35 +60,37 @@ struct BipartiteMatching{
         return 0;
     }
 
-    int match(int n){
+    int match(int n, int cost){
         memset(L, -1, sizeof(L));
         memset(R, -1, sizeof(R));
         int ret = 0;
-        while(bfs(n)){
+        while(bfs(n, cost)){
+            memset(vis, 0, sizeof(vis));
             rep(i, 0, n){
-                if(L[i] == -1 && dfs(i)) ret++;
+                if(L[i] == -1 && dfs(i, cost)) ret++;
             }
         }
         return ret;
     }
 }Bpm;
 
-int N;
-
 void solve(){
-    while(scanf("%d", &N)>0){
-        rep(i, 0, N){
-            int u, cnt;
-            scanf("%d: (%d)", &u, &cnt);
-            rep(j, 0, cnt){
-                int v;
-                scanf("%d", &v);
-                Bpm.addEdge(u, v-N);
-            }
-        }
-        printf("%d\n", Bpm.match(N));
-        Bpm.clear();
+    int N; cin >> N;
+    rep(i, 0, N){
+        int a, ka, b, kb; cin >> a >> ka >> b >> kb;
+        a--; b--;
+        Bpm.addEdge(i, a, ka);
+        Bpm.addEdge(i, b, kb);
     }
+    int INF = int(1e6)+1;
+    int ok = INF, ng=-1;
+    while(ok-ng > 1){
+        int mid = (ok+ng)/2;
+        if(Bpm.match(N, mid) == N) ok = mid;
+        else ng = mid;
+    }
+    if (ok == INF) cout << -1;
+    else cout << ok;
     return;
 }
 

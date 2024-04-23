@@ -11,11 +11,10 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-
-const int MAXN = 10000, MAXM = 10000;
+const int MAXN = 300, MAXM = 300;
 struct BipartiteMatching{
     vector<int> graph[MAXN];
-    int dis[MAXN], L[MAXN], R[MAXM];
+    int dis[MAXN], L[MAXN], R[MAXM], vis[MAXN];
     void clear(){ rep(i, 0, MAXN) graph[i].clear(); }
     void addEdge(int l, int r){ graph[l].push_back(r); }
 
@@ -43,8 +42,10 @@ struct BipartiteMatching{
     }
 
     bool dfs(int l){
+        if(vis[l]) return 0;
+        vis[l] = 1;
         for(auto &r : graph[l]){
-            if(R[r] == -1 || (dis[R[r]] == dis[l] + 1 && dfs(R[r]))){
+            if(R[r] == -1 || (!vis[R[r]] && dis[R[r]] == dis[l] + 1 && dfs(R[r]))){
                 L[l] = r;
                 R[r] = l;
                 return true;
@@ -58,30 +59,30 @@ struct BipartiteMatching{
         memset(R, -1, sizeof(R));
         int ret = 0;
         while(bfs(n)){
+            memset(vis, 0, sizeof(vis));
             rep(i, 0, n){
                 if(L[i] == -1 && dfs(i)) ret++;
             }
         }
         return ret;
     }
-}Bpm;
-
-int N;
+};
 
 void solve(){
-    while(scanf("%d", &N)>0){
-        rep(i, 0, N){
-            int u, cnt;
-            scanf("%d: (%d)", &u, &cnt);
-            rep(j, 0, cnt){
-                int v;
-                scanf("%d", &v);
-                Bpm.addEdge(u, v-N);
-            }
-        }
-        printf("%d\n", Bpm.match(N));
-        Bpm.clear();
+    int N, M, K1, K2; cin >> N >> M >> K1 >> K2;
+    BipartiteMatching Bpm1, Bpm2;
+    rep(i, 0, K1){
+        int a, b; cin >> a >> b;
+        a--; b--;
+        Bpm1.addEdge(a, b);
     }
+    rep(i, 0, K2){
+        int a, b; cin >> a >> b;
+        a--; b--;
+        Bpm2.addEdge(a, b);
+    };
+    if(Bpm1.match(N) < Bpm2.match(N)) cout << "네 다음 힐딱이";
+    else cout << "그만 알아보자";
     return;
 }
 

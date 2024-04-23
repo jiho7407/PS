@@ -1,21 +1,11 @@
-#include <bits/stdc++.h>
-#define ll long long
-#define rep(i,l,r)for(ll i=(l);i<(r);i++)
-using namespace std;
-typedef pair<int, int> pii;
+// 이분 매칭
+// 호프크로프트 카프 알고리즘 사용
+// 시간 복잡도 O(Esqrt(V))
 
-
-void fastio(){
-    cin.tie(0);
-    cout.tie(0);
-    ios_base::sync_with_stdio(false);
-}
-
-
-const int MAXN = 10000, MAXM = 10000;
+const int MAXN = 1000, MAXM = 1000; // 0-based로 사용. 그렇지 않을시 match(N+1) 조심하기.
 struct BipartiteMatching{
     vector<int> graph[MAXN];
-    int dis[MAXN], L[MAXN], R[MAXM];
+    int dis[MAXN], L[MAXN], R[MAXM], vis[MAXN];
     void clear(){ rep(i, 0, MAXN) graph[i].clear(); }
     void addEdge(int l, int r){ graph[l].push_back(r); }
 
@@ -43,8 +33,10 @@ struct BipartiteMatching{
     }
 
     bool dfs(int l){
+        if(vis[l]) return 0;
+        vis[l] = 1;
         for(auto &r : graph[l]){
-            if(R[r] == -1 || (dis[R[r]] == dis[l] + 1 && dfs(R[r]))){
+            if(R[r] == -1 || (!vis[R[r]] && dis[R[r]] == dis[l] + 1 && dfs(R[r]))){
                 L[l] = r;
                 R[r] = l;
                 return true;
@@ -58,6 +50,7 @@ struct BipartiteMatching{
         memset(R, -1, sizeof(R));
         int ret = 0;
         while(bfs(n)){
+            memset(vis, 0, sizeof(vis));
             rep(i, 0, n){
                 if(L[i] == -1 && dfs(i)) ret++;
             }
@@ -65,32 +58,3 @@ struct BipartiteMatching{
         return ret;
     }
 }Bpm;
-
-int N;
-
-void solve(){
-    while(scanf("%d", &N)>0){
-        rep(i, 0, N){
-            int u, cnt;
-            scanf("%d: (%d)", &u, &cnt);
-            rep(j, 0, cnt){
-                int v;
-                scanf("%d", &v);
-                Bpm.addEdge(u, v-N);
-            }
-        }
-        printf("%d\n", Bpm.match(N));
-        Bpm.clear();
-    }
-    return;
-}
-
-int main(){
-    fastio();
-    int tc = 1;
-    // cin >> tc;
-    while(tc--){
-        solve();
-    }
-    return 0;
-}
