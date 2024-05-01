@@ -45,8 +45,8 @@ void solve(){
             if(b%a == 0) zeromaker.insert(b/a);
 
             // 나머지는 내림해서 이용하자.
-            if(a^b < 0) S.insert(b/a-1);
-            else S.insert(b/a);ㅏ
+            if((a<0 && b>0) || (a>0 && b<0)) S.insert(b/a-1);
+            else S.insert(b/a);
         }
         else{
             cin >> c; c *= -1;
