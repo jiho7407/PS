@@ -24,13 +24,8 @@ void solve(){
     ll ans[500];
     fill(ans, ans+500, 0);
     priority_queue<tiii, vector<tiii>, greater<tiii>> pq; // dist, x, y, from
-<<<<<<< HEAD
-    rep(i, 0, N) fill(dist[i], dist[i]+N, 1e9);
-    rep(i, 0, N) fill(from[i], from[i]+N, -1);
-=======
     rep(i, 0, N) fill(dist[i], dist[i]+M, 1e18);
     rep(i, 0, N) fill(from[i], from[i]+M, -1);
->>>>>>> fd713e931550eb0dbf5e9263bfc2efcf44772dc2
     rep(i, 0, N){
         pq.push({board[i][M-1], i, M-1, i});
         dist[i][M-1] = board[i][M-1];
