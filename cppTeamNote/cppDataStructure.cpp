@@ -1,89 +1,37 @@
 // Segment Tree
-
-struct SegmentTree{
-    int tree[2100];
-    int sz;
-    void init(int N){
-        sz = 1;
-        while(sz < N) sz <<= 1;
-    }
-    void update(int i, int x){
-        int idx = sz + i;
-        tree[idx] = x;
-        while(idx >>= 1){
-            tree[idx] = tree[idx<<1] + tree[idx<<1|1];
-        }
-    }
-    int query(int L, int R){
-        int left = L + sz, right = R + sz;
-        int ret = 0;
-        while(left <= right){
-            if((left&1)==1) ret += tree[left++];
-            if((right&1)==0) ret += tree[right--];
-            left >>= 1; right >>= 1;
-        }
-        return ret;
-    }
-};
-
-struct SegmentTree2D{
-    SegmentTree ST[2100];
-    int sz;
-    void init(int N, int M){
-        sz = 1;
-        while(sz < N) sz <<= 1;
-        for(int i = 0; i < 2*sz; i++) ST[i].init(M);
-    }
-    void update(int i, int j, int x){
-        int idx = sz + i;
-        ST[idx].update(j, x);
-        while(idx >>= 1){
-            int q1 = ST[idx<<1].query(j, j);
-            int q2 = ST[idx<<1|1].query(j, j);
-            ST[idx].update(j, q1 + q2);
-        }
-    }
-    int query(int L, int R, int U, int D){
-        int left = L + sz, right = R + sz;
-        int ret = 0;
-        while(left <= right){
-            if((left&1) == 1) ret += ST[left++].query(U, D);
-            if((right&1) == 0) ret += ST[right--].query(U, D);
-            left >>= 1; right >>= 1;
-        }
-        return ret;
-    }
-};
-
-// Segment Tree
-// 초기 업데이트시간 O(NlogN) -> O(N), vector 사용버전
 struct SegmentTree{
     vector<int> tree;
     int sz;
-    void init(int N, vector<int>& lst){
+
+    void pull(int node){
+        tree[node] = gcd(tree[node<<1], tree[node<<1|1]);
+    }
+
+    void init(int N){
         sz = 1;
         while(sz < N) sz <<= 1;
         tree.resize(2*sz);
-        for(int i = 0; i < N; i++){
-            tree[sz+i] = lst[i];
-        }
-        for(int i = sz-1; i > 0; i--){
-            tree[i] = max(tree[i<<1], tree[i<<1|1]);
-        }
     }
+    
+    void set(int i, int x){
+        tree[sz+i] = x;
+    }
+
+    void build(){
+        for(int i = sz-1; i > 0; i--) pull(i);
+    }
+
     void update(int i, int x){
         int idx = sz + i;
-        tree[idx] = x;
-        while(idx >>= 1){
-            tree[idx] = max(tree[idx<<1], tree[idx<<1|1]);
-        }
+        tree[idx] += x;
+        while(idx >>= 1) pull(idx);
     }
     int query(int L, int R){
         int left = L + sz, right = R + sz;
         int ret = 0;
         while(left <= right){
-            if((left&1)==1) ret = max(ret, tree[left++]);
-            if((right&1)==0) ret = max(ret, tree[right--]);
+            if((left&1)==1) ret = gcd(ret, tree[left++]);
+            if((right&1)==0) ret = gcd(ret, tree[right--]);
             left >>= 1; right >>= 1;
         }
         return ret;
@@ -197,12 +145,11 @@ struct LazySegmentTree{
         lazy.assign(sz<<1, 0);
     }
 
-    void set(ll idx, ll val){ tree[sz|idx] = val; }
-    void build(){
-        for(ll i = sz-1; i > 0; i--) tree[i] = tree[i<<1] + tree[i<<1|1];
+    void pull(ll node){
+        tree[node] = tree[node<<1] + tree[node<<1|1];
     }
 
-    void propagate(ll node, ll start, ll end){
+    void push(ll node, ll start, ll end){
         if(lazy[node] != 0){
             tree[node] += (end - start + 1) * lazy[node];
             if(start != end){
@@ -213,26 +160,26 @@ struct LazySegmentTree{
         }
     }
 
+    void set(ll idx, ll val){ tree[sz|idx] = val; }
+    void build(){ for(ll i = sz-1; i > 0; i--) pull(i); }
+    
     void update(ll left, ll right, ll diff){
         update(1, 0, sz-1, left, right, diff);
         return;
     }
 
     void update(ll node, ll start, ll end, ll left, ll right, ll diff){
-        propagate(node, start, end);
+        push(node, start, end);
         if(left > end || right < start) return;
         if(left <= start && end <= right){
-            tree[node] += (end - start + 1) * diff;
-            if(start != end){
-                lazy[node<<1] += diff;
-                lazy[node<<1|1] += diff;
-            }
+            lazy[node] += diff;
+            push(node, start, end);
             return;
         }
         ll mid = (start + end)>>1;
         update(node<<1, start, mid, left, right, diff);
         update(node<<1|1, mid+1, end, left, right, diff);
-        tree[node] = tree[node<<1] + tree[node<<1|1];
+        pull(node);
         return;
     }
 
@@ -241,10 +188,68 @@ struct LazySegmentTree{
     }
 
     ll query(ll node, ll start, ll end, ll left, ll right){
-        propagate(node, start, end);
+        push(node, start, end);
         if(left > end || right < start) return 0;
         if(left <= start && end <= right) return tree[node];
         ll mid = (start + end)>>1;
-        return query(node<<1, start, mid, left, right) + query(node<<1|1, mid+1, end, left, right);
+        ll lq = query(node<<1, start, mid, left, right);
+        ll rq = query(node<<1|1, mid+1, end, left, right);
+        return lq + rq;
     }
 };
+
+// Persistent Segment Tree
+// PST
+
+struct Node{
+    Node *L, *R;
+    ll V;
+    Node(){ L = R = nullptr; V = 0; }
+};
+
+struct PersistentSegmentTree{
+    Node *root[200001]; // root[i]: i번째 버전의 루트 노드
+
+    void build(Node *node, int S, int E){
+        if(S == E){ node->V = 0; return; }
+        int M = (S+E)>>1;
+        node->L = new Node();
+        node->R = new Node();
+        build(node->L, S, M);
+        build(node->R, M+1, E);
+        node->V = node->L->V + node->R->V;
+    }
+
+    void update(int prev, int cur, int X, int V){
+        update(root[prev], root[cur], 0, N-1, X, V);
+    }
+
+    void update(Node *prev, Node *cur, int S, int E, int X, int V){
+        if(X<S || X>E) return;
+        if(S==E){ cur->V = V; return; }
+        int M = (S+E)>>1;
+        if(X<=M){
+            cur->L = new Node();
+            cur->R = prev->R;
+            update(prev->L, cur->L, S, M, X, V);
+        }
+        else{
+            cur->L = prev->L;
+            cur->R = new Node();
+            update(prev->R, cur->R, M+1, E, X, V);
+        }
+        cur->V = cur->L->V + cur->R->V;
+    }
+
+    ll query(int prev, int cur, int K){
+        return query(root[prev], root[cur], 0, N-1, K);
+    }
+
+    ll query(Node *prev, Node *cur, int S, int E, int K){
+        if(S == E) return S;
+        int DIFF = cur->L->V - prev->L->V;
+        int M = (S+E)>>1;
+        if(K <= DIFF) return query(prev->L, cur->L, S, M, K);
+        else return query(prev->R, cur->R, M+1, E, K-DIFF);
+    }
+}PST;

@@ -1,10 +1,8 @@
 #include <bits/stdc++.h>
 #define ll long long
-#define lll __int128
-#define rep(i,l,r)for(int i=(l);i<(r);i++)
+#define rep(i,l,r)for(ll i=(l);i<(r);i++)
 using namespace std;
 typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
 
 
 void fastio(){
@@ -13,7 +11,10 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
+int N, K;
+
 void solve(){
+    cin >> N >> K;
     
     return;
 }
@@ -21,8 +22,9 @@ void solve(){
 int main(){
     fastio();
     int tc = 1;
-    // cin >> tc;
-    while(tc--){
+    cin >> tc;
+    rep(i, 0, tc){
+        cout << "Case #" << i+1 << ": ";
         solve();
     }
     return 0;
