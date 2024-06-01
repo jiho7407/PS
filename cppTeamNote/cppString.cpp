@@ -80,3 +80,32 @@ pii get_bound(int SA[],string T){
 
     return {lb, up};
 }
+
+// 매내쳐
+// Manacher
+const int mxN = 5e6;
+struct Manacher{
+    int N, r = 0, p = 0;
+    int A[mxN];
+    Manacher(string T){
+        string S = "#";
+        for(auto c : T){ S += c; S += '#'; }
+
+        N = S.size();
+        rep(i, 0, N){
+            if(i <= r) A[i] = min(A[2*p-i], r-i);
+            else A[i] = 0;
+
+            while(1){
+                if(i-A[i]-1 < 0 || i+A[i]+1 >= N) break; // 범위 밖으로 나간 경우
+                if(S[i-A[i]-1] != S[i+A[i]+1]) break; // 대칭이 아닌 경우
+                A[i]++;
+            }
+
+            if(r < i+A[i]){
+                r = i+A[i];
+                p = i;
+            }
+        }
+    }
+};

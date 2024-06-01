@@ -1,6 +1,0 @@
-print(1 ^ 0)
-print(1 ^ -1)
-print(4 ^ -8)
-print(-2 ^ -3)
-print(0 ^ 0)
-print(-8 // 2)

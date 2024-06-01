@@ -14,8 +14,21 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
+const ll mod = 1e9+7;
+const ll p = 31;
+
 void solve(){
-    
+    int N; cin >> N;
+    char a;
+    ll hash1 = 0, hash2 = 0;
+    ll rp = 1;
+    while(cin >> a){
+        hash1 = (hash1*p + a)%mod;
+        hash2 = (hash2 + a*rp)%mod;
+        rp = (rp*p)%mod;
+    }
+    if(hash1 == hash2) cout << "TAK";
+    else cout << "NIE";
     return;
 }
 
