@@ -1,6 +1,19 @@
-// 접미사 배열
-// Suffix Array
+#include <bits/stdc++.h>
+#define ll long long
+#define lll __int128
+#define rep(i,l,r)for(int i=(l);i<(r);i++)
+using namespace std;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 
+
+void fastio(){
+    cin.tie(0);
+    cout.tie(0);
+    ios_base::sync_with_stdio(false);
+}
+
+const int mxN = 1200000;
 struct SuffixArray{
     string S;
     int N, cnt[mxN], ord[mxN], tmp[mxN], SA[mxN], LCP[mxN];
@@ -55,40 +68,12 @@ struct SuffixArray{
     }
 };
 
-// 문자열 이분탐색
-
-pii get_bound(int SA[],string T){
-    int lb, up;
-
-    // Lower Bound
-    int lo = 0, hi = N;
-    while(lo<hi){
-        int mid = (lo+hi)>>1;
-        if(S.compare(SA[mid], T.size(), T) < 0) lo = mid+1;
-        else hi = mid;
-    }
-    lb = lo;
-
-    // Upper Bound
-    lo = 0, hi = N;
-    while(lo<hi){
-        int mid = (lo+hi)>>1;
-        if(S.compare(SA[mid], T.size(), T) <= 0) lo = mid+1;
-        else hi = mid;
-    }
-    up = hi;
-
-    return {lb, up};
-}
-
-// 매내쳐
-// Manacher
-const int mxN = 5e6;
 struct Manacher{
+    string S;
     int N, r = 0, p = 0;
     int A[mxN];
     Manacher(string T){
-        string S = "#";
+        S = "#";
         for(auto c : T){ S += c; S += '#'; }
 
         N = S.size();
@@ -109,3 +94,53 @@ struct Manacher{
         }
     }
 };
+
+int endpal[mxN];
+
+void solve(){
+    int N, K; cin >> N >> K;
+    string S; cin >> S;
+    auto SA = new SuffixArray(S);
+    auto MN = new Manacher(S);
+    fill(endpal, endpal+N, -1);
+    rep(i, 0, MN->N){
+        if(MN->A[i] >= K){
+            
+            int left = (i-1)/2 - K/2;
+            if(MN->A[i]%2==0) left++;
+            int right = (i-1)/2 + K/2;
+            if(K%2 && MN->A[i]%2 == 0){
+                left--;
+                right++;
+            }
+            // cout << i << " " << left << ' ' << right << '\n';
+            if(endpal[left] == -1) endpal[left] = right;
+            else endpal[left] = min(endpal[left], right);
+        }
+    }
+    // rep(i, 0, MN->N) cout << MN->A[i] << ' ';
+    // cout << '\n';
+    for(int i = N-2; i>=0; i--){
+        if(endpal[i] == -1) endpal[i] = endpal[i+1];
+    }
+    // rep(i, 0, N) cout << endpal[i] << ' ';
+    // cout << '\n';
+    ll ans = 0;
+    rep(i, 0, N){
+        if(endpal[SA->SA[i]] == -1) continue;
+        int LCPleft = SA->SA[i] + SA->LCP[i];
+        ans += max(0, N - max(LCPleft, endpal[SA->SA[i]]));
+    }
+    cout << ans;
+    return;
+}
+
+int main(){
+    fastio();
+    int tc = 1;
+    // cin >> tc;
+    while(tc--){
+        solve();
+    }
+    return 0;
+}

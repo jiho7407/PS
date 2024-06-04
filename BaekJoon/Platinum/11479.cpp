@@ -1,6 +1,19 @@
-// 접미사 배열
-// Suffix Array
+#include <bits/stdc++.h>
+#define ll long long
+#define lll __int128
+#define rep(i,l,r)for(int i=(l);i<(r);i++)
+using namespace std;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 
+
+void fastio(){
+    cin.tie(0);
+    cout.tie(0);
+    ios_base::sync_with_stdio(false);
+}
+
+const int mxN = 1e6+1;
 struct SuffixArray{
     string S;
     int N, cnt[mxN], ord[mxN], tmp[mxN], SA[mxN], LCP[mxN];
@@ -55,57 +68,22 @@ struct SuffixArray{
     }
 };
 
-// 문자열 이분탐색
-
-pii get_bound(int SA[],string T){
-    int lb, up;
-
-    // Lower Bound
-    int lo = 0, hi = N;
-    while(lo<hi){
-        int mid = (lo+hi)>>1;
-        if(S.compare(SA[mid], T.size(), T) < 0) lo = mid+1;
-        else hi = mid;
-    }
-    lb = lo;
-
-    // Upper Bound
-    lo = 0, hi = N;
-    while(lo<hi){
-        int mid = (lo+hi)>>1;
-        if(S.compare(SA[mid], T.size(), T) <= 0) lo = mid+1;
-        else hi = mid;
-    }
-    up = hi;
-
-    return {lb, up};
+void solve(){
+    string S; cin >> S;
+    auto SA = new SuffixArray(S);
+    ll N = S.size();
+    ll ans = N*(N+1)/2;
+    rep(i, 0, N) ans -= SA->LCP[i];
+    cout << ans;
+    return;
 }
 
-// 매내쳐
-// Manacher
-const int mxN = 5e6;
-struct Manacher{
-    int N, r = 0, p = 0;
-    int A[mxN];
-    Manacher(string T){
-        string S = "#";
-        for(auto c : T){ S += c; S += '#'; }
-
-        N = S.size();
-        rep(i, 0, N){
-            if(i <= r) A[i] = min(A[2*p-i], r-i);
-            else A[i] = 0;
-
-            while(1){
-                if(i-A[i]-1 < 0 || i+A[i]+1 >= N) break; // 범위 밖으로 나간 경우
-                if(S[i-A[i]-1] != S[i+A[i]+1]) break; // 대칭이 아닌 경우
-                A[i]++;
-            }
-
-            if(r < i+A[i]){
-                r = i+A[i];
-                p = i;
-            }
-        }
+int main(){
+    fastio();
+    int tc = 1;
+    // cin >> tc;
+    while(tc--){
+        solve();
     }
-};
+    return 0;
+}

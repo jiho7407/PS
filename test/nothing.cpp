@@ -15,7 +15,15 @@ void fastio(){
 }
 
 void solve(){
-    
+    rep(i, 1, 100000){
+        int N = i;
+        int sq = sqrt(N);
+        int sz = (N-1)/sq + 1;
+        int newN = sq*sz-1;
+        // cout << N << " " << sq << " " << sz << " " << newN << "\n";
+        if(sz >= 350) {cout << i << "\n"; return; }
+        if(sq*sz-1 >= 101000) {cout << i << " " << sq*sz-1 << "\n"; return; }
+    }
     return;
 }
 
