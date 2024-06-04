@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 #define ll long long
 #define lll __int128
-#define ld long double
 #define rep(i,l,r)for(ll i=(l);i<(r);i++)
 using namespace std;
 typedef pair<int, int> pii;
@@ -14,108 +13,143 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-const ld mINF = -1e20;
-struct SegmentTree{
-    struct Node{
-        vector<pll> cvh;
-        vector<ld> intersection;
-        Node(){
-            cvh.push_back({0, 0});
-            intersection.push_back(mINF);
-        }
-        ld cross(pll a, pll b){
-            return (ld)(b.second - a.second) / (a.first - b.first);
-        }
-        void add_line(pll nl){
-            while(cvh.size() >= 2){
-                if(cross(cvh[cvh.size()-2], nl) <= cross(cvh.back(), nl)) break;
-                cvh.pop_back();
-                intersection.pop_back();
-            }
-            intersection.push_back(cross(cvh.back(), nl));
-            cvh.push_back(nl);
-        }
-        ll query(ll x){
-            ll idx = lower_bound(intersection.begin(), intersection.end(), x) - intersection.begin();
-            idx--;
-            // if(cvh[idx].first * x + cvh[idx].second > 0){
-            //     for(auto x: cvh) cout << x.first << ' ' << x.second << '\n';
-            //     for(auto x: intersection) cout << x << ' ';
-            //     cout << '\n';
-            //     cout << "query: " << x << ' ' << cvh[idx].first << ' ' << cvh[idx].second << '\n';
-            // }
-            return cvh[idx].first * x + cvh[idx].second;
-        }
-    };
-    vector<Node> tree;
-    ll sz;
-    void init(ll N){
-        sz = 1;
-        while(sz < N) sz <<= 1;
-        tree.resize(2*sz, Node());
-    }
-
-    void update(ll i, pll nl){
-        // cout << "update: " << i << ' ' << nl.first << ' ' << nl.second << '\n';
-        ll idx = sz + i;
-        while(idx){
-            tree[idx].add_line(nl);
-            idx >>= 1;
-        }
-    }
-    ll query(ll L, ll R, ll x){
-        ll left = L + sz, right = R + sz;
-        ll ret = -1e16;
-        while(left <= right){
-            if((left&1)==1) ret = max(ret, tree[left++].query(x));
-            if((right&1)==0) ret = max(ret, tree[right--].query(x));
-            left >>= 1; right >>= 1;
-        }
-        // if(ret>0) cout << L << ' ' << R << ' ' << x << ' ' << ret << '\n';
-        return ret;
-    }
-}ST;
-
-const ll mxN = 2e5;
-ll N;
-ll A[mxN], DP[mxN];
-vector<ll> newA;
-map<ll, ll> mp;
+const int mod = 10007;
+using lint = long long;
+lint ipow(lint x, lint p){
+	lint ret = 1, piv = x;
+	while(p){
+		if(p & 1) ret = ret * piv % mod;
+		piv = piv * piv % mod;
+		p >>= 1;
+	}
+	return ret;
+}
+vector<int> berlekamp_massey(vector<int> x){
+	vector<int> ls, cur;
+	int lf, ld;
+	for(int i=0; i<x.size(); i++){
+		lint t = 0;
+		for(int j=0; j<cur.size(); j++){
+			t = (t + 1ll * x[i-j-1] * cur[j]) % mod;
+		}
+		if((t - x[i]) % mod == 0) continue;
+		if(cur.empty()){
+			cur.resize(i+1);
+			lf = i;
+			ld = (t - x[i]) % mod;
+			continue;
+		}
+		lint k = -(x[i] - t) * ipow(ld, mod - 2) % mod;
+		vector<int> c(i-lf-1);
+		c.push_back(k);
+		for(auto &j : ls) c.push_back(-j * k % mod);
+		if(c.size() < cur.size()) c.resize(cur.size());
+		for(int j=0; j<cur.size(); j++){
+			c[j] = (c[j] + cur[j]) % mod;
+		}
+		if(i-lf+(int)ls.size()>=(int)cur.size()){
+			tie(ls, lf, ld) = make_tuple(cur, i, (t - x[i]) % mod);
+		}
+		cur = c;
+	}
+	for(auto &i : cur) i = (i % mod + mod) % mod;
+	return cur;
+}
+int get_nth(vector<int> rec, vector<int> dp, lint n){
+	int m = rec.size();
+	vector<int> s(m), t(m);
+	s[0] = 1;
+	if(m != 1) t[1] = 1;
+	else t[0] = rec[0];
+	auto mul = [&rec](vector<int> v, vector<int> w){
+		int m = v.size();
+		vector<int> t(2 * m);
+		for(int j=0; j<m; j++){
+			for(int k=0; k<m; k++){
+				t[j+k] += 1ll * v[j] * w[k] % mod;
+				if(t[j+k] >= mod) t[j+k] -= mod;
+			}
+		}
+		for(int j=2*m-1; j>=m; j--){
+			for(int k=1; k<=m; k++){
+				t[j-k] += 1ll * t[j] * rec[k-1] % mod;
+				if(t[j-k] >= mod) t[j-k] -= mod;
+			}
+		}
+		t.resize(m);
+		return t;
+	};
+	while(n){
+		if(n & 1) s = mul(s, t);
+		t = mul(t, t);
+		n >>= 1;
+	}
+	lint ret = 0;
+	for(int i=0; i<m; i++) ret += 1ll * s[i] * dp[i] % mod;
+	return ret % mod;
+}
+int guess_nth_term(vector<int> x, lint n){
+	if(n < x.size()) return x[n];
+	vector<int> v = berlekamp_massey(x);
+	if(v.empty()) return 0;
+	return get_nth(v, x, n);
+}
+struct elem{int x, y, v;}; // A_(x, y) <- v, 0-based. no duplicate please..
+vector<int> get_min_poly(int n, vector<elem> M){
+	// smallest poly P such that A^i = sum_{j < i} {A^j \times P_j}
+	vector<int> rnd1, rnd2;
+	mt19937 rng(0x14004);
+	auto randint = [&rng](int lb, int ub){
+		return uniform_int_distribution<int>(lb, ub)(rng);
+	};
+	for(int i=0; i<n; i++){
+		rnd1.push_back(randint(1, mod - 1));
+		rnd2.push_back(randint(1, mod - 1));
+	}
+	vector<int> gobs;
+	for(int i=0; i<2*n+2; i++){
+		int tmp = 0;
+		for(int j=0; j<n; j++){
+			tmp += 1ll * rnd2[j] * rnd1[j] % mod;
+			if(tmp >= mod) tmp -= mod;
+		}
+		gobs.push_back(tmp);
+		vector<int> nxt(n);
+		for(auto &i : M){
+			nxt[i.x] += 1ll * i.v * rnd1[i.y] % mod;
+			if(nxt[i.x] >= mod) nxt[i.x] -= mod;
+		}
+		rnd1 = nxt;
+	}
+	auto sol = berlekamp_massey(gobs);
+	reverse(sol.begin(), sol.end());
+	return sol;
+}
+lint det(int n, vector<elem> M){
+	vector<int> rnd;
+	mt19937 rng(0x14004);
+	auto randint = [&rng](int lb, int ub){
+		return uniform_int_distribution<int>(lb, ub)(rng);
+	};
+	for(int i=0; i<n; i++) rnd.push_back(randint(1, mod - 1));
+	for(auto &i : M){
+		i.v = 1ll * i.v * rnd[i.y] % mod;
+	}
+	auto sol = get_min_poly(n, M)[0];
+	if(n % 2 == 0) sol = mod - sol;
+	for(auto &i : rnd) sol = 1ll * sol * ipow(i, mod - 2) % mod;
+	return sol;
+}
 
 void solve(){
-    ifstream cin("D:\\Programming-D\\PS\\test\\input.txt");
-    cin >> N;
-    rep(i, 0, N) cin >> A[i];
-    rep(i, 0, N) newA.push_back(A[i]);
-    sort(newA.begin(), newA.end());
-    newA.erase(unique(newA.begin(), newA.end()), newA.end());
-    rep(i, 0, newA.size()) mp[newA[i]] = i;
-    ST.init(newA.size());
-    fill(DP, DP+N+1, -1e18);
-    DP[0] = 0;
-    rep(i, 0, N){
-        ll idx = mp[A[i]];
-        DP[i+1] = ST.query(0, idx, i+1) + A[i] - i*(i+1)/2;
-        if(DP[i+1]>0){
-            cout << ST.query(0, idx, i+1) << ' ' << A[i] << ' ' << i*(i+1)/2 << '\n';
-            cout << "i: " << i << " idx: " << idx << " query: " << ST.query(0, idx, i+1) << " " << DP[i+1] << '\n';
-        }
-        ST.update(idx, {i+1, DP[i+1]-(i+2)*(i+1)/2});
-    }
-    ll ans = -1e18;
-    rep(i, 0, N+1){
-        ll rest = N - i;
-        ans = max(ans, DP[i] - rest*(rest+1)/2);
-    }
-    // rep(i, 0, N+1) cout << DP[i] << ' ';
-    // cout << '\n';
-    cout << ans << '\n';
+    long long n; 
+    cin >> n; 
+    cout << guess_nth_term({1, 3, 5, 11}, n-1) << endl;
     return;
 }
 
 int main(){
     fastio();
-    ifstream cin("D:\\Programming-D\\PS\\test\\input.txt");
     int tc = 1;
     // cin >> tc;
     while(tc--){
