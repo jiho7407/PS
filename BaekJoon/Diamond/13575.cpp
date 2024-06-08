@@ -1,3 +1,19 @@
+#include <bits/stdc++.h>
+#define ll long long
+#define lll __int128
+#define ld long double
+#define rep(i,l,r)for(ll i=(l);i<(r);i++)
+using namespace std;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+
+
+void fastio(){
+    cin.tie(0);
+    cout.tie(0);
+    ios_base::sync_with_stdio(false);
+}
+
 // FFT
 const double PI = acos(-1);
 typedef complex<double> cpd;
@@ -42,18 +58,6 @@ void FFT(vector<cpd> &A, bool ivt){
     }
 }
 
-vector<cpd> mul(vector<cpd> &A, vector<cpd> &B){
-    int N = 1;
-    while(N < A.size() + B.size()) N <<= 1;
-    A.resize(N); B.resize(N);
-    FFT(A, false); FFT(B, false);
-    for(int i = 0; i<N; i++) A[i] *= B[i];
-    FFT(A, true);
-    return A;
-}
-
-
-// 이런느낌으로도 사용가능
 vector<int> mul(const vector<int> &A, const vector<int> &B){
     vector<cpd> AA(A.begin(), A.end()), BB(B.begin(), B.end());
     int N = 1;
@@ -65,7 +69,36 @@ vector<int> mul(const vector<int> &A, const vector<int> &B){
     vector<int> ret(N);
     rep(i, 0, N){
         ret[i] = round(AA[i].real());
-        // if(ret[i]) ret[i] = 1;
+        if(ret[i]) ret[i] = 1;
     }
     return ret;
+}
+
+void solve(){
+    int N, K; cin >> N >> K;
+    vector<int> ret(1), base(1001);
+    rep(i, 0, N){
+        int x; cin >> x;
+        base[x] = 1;
+    }
+    ret[0] = 1;
+    while(K){
+        if(K&1) ret = mul(ret, base);
+        base = mul(base, base);
+        K >>= 1;
+    }
+    rep(i, 0, ret.size()){
+        if(ret[i]) cout << i << ' ';
+    }
+    return;
+}
+
+int main(){
+    fastio();
+    int tc = 1;
+    // cin >> tc;
+    while(tc--){
+        solve();
+    }
+    return 0;
 }

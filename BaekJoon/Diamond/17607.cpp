@@ -77,11 +77,12 @@ struct SplayTree{
     void update(Node *x){
         push(x);
         x->sz = 1;
-        if(x->l) x->sz += x->l->sz;
-        if(x->r) x->sz += x->r->sz;
+        if(x->l) { push(x->l); x->sz += x->l->sz; }
+        if(x->r) { push(x->r); x->sz += x->r->sz; }
+
+        x->pf = x->sf = x->mf = (x->val == 1);
 
         if(x->val == 1){
-            x->pf = x->sf = x->mf = 1;
             if(x->l && x->r){
                 if(x->l->pf == x->l->sz) x->pf = x->l->sz + 1 + x->r->pf;
                 else x->pf = x->l->pf;
@@ -103,7 +104,6 @@ struct SplayTree{
             }
         }
         else{
-            x->pf = x->sf = x->mf = 0;
             if(x->l){
                 x->pf = x->l->pf;
                 x->mf = max(x->mf, x->l->mf);
@@ -200,7 +200,6 @@ int N, M;
 vector<ll> arr;
 
 void solve(){
-    ifstream cin("D:\\Programming-D\\PS\\test\\input.txt");
     cin >> N;
     arr.resize(N+1);
     rep(i, 1, N+1) cin >> arr[i];

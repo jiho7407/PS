@@ -16,6 +16,7 @@ void fastio(){
 
 void solve(){
     
+    return;
 }
 
 int main(){

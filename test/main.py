@@ -19,7 +19,7 @@ def run_cpp_program():
 
 
 def run_cpp_program2():
-    subprocess.run(["g++", "-o", "test", "test2.cpp"])
+    subprocess.run(["g++", "-o", "test", "testb2.cpp"])
     result = subprocess.run(["./test2.exe"], capture_output=True, text=True)
     return result.stdout.strip()
 
@@ -31,6 +31,8 @@ def compare_results(result1, result2):
     else:
         # print(f"result1:{result1}, result2: {result2}")
         print("WA")
+        # print(result1)
+        # print(result2)
         sys.exit()
 
 
@@ -48,6 +50,7 @@ if __name__ == "__main__":
         cpp_result2 = run_cpp_program2()
 
         # 결과 비교
+        # compare_results(python_result, cpp_result)
         compare_results(cpp_result, cpp_result2)
 
 """
