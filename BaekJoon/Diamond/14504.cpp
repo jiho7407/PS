@@ -49,7 +49,7 @@ void solve(){
     cin >> M;
     while(M--){
         int op; cin >> op;
-        if(op == 1){
+        if(op == 2){
             int i, j, k; cin >> i >> j >> k; i--; j--;
             cout << query(i, j, k) << '\n';
         }
