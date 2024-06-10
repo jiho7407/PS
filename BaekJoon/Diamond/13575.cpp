@@ -58,31 +58,38 @@ void FFT(vector<cpd> &A, bool ivt){
     }
 }
 
-void mul(vector<cpd> &A, vector<cpd> &B){
+vector<int> mul(const vector<int> &A, const vector<int> &B){
+    vector<cpd> AA(A.begin(), A.end()), BB(B.begin(), B.end());
     int N = 1;
-    while(N < A.size() + B.size()) N <<= 1;
-    A.resize(N); B.resize(N);
-    FFT(A, false); FFT(B, false);
-    for(int i = 0; i<N; i++) A[i] *= B[i];
-    FFT(A, true);
+    while(N < AA.size() + BB.size()) N <<= 1;
+    AA.resize(N); BB.resize(N);
+    FFT(AA, false); FFT(BB, false);
+    for(int i = 0; i<N; i++) AA[i] *= BB[i];
+    FFT(AA, true);
+    vector<int> ret(N);
+    rep(i, 0, N){
+        ret[i] = round(AA[i].real());
+        if(ret[i]) ret[i] = 1;
+    }
+    return ret;
 }
 
-ll N, M;
-vector<cpd> A, B;
-
 void solve(){
-    cin >> N >> M;
-    A.resize(1);
-    B.resize(N + 1);
-    A[0] = cpd{1, 0};
+    int N, K; cin >> N >> K;
+    vector<int> ret(1), base(1001);
     rep(i, 0, N){
         int x; cin >> x;
-        B[x] = cpd{1, 0};
+        base[x] = 1;
     }
-    rep(i, 0, M){
-        mul(A, B);
+    ret[0] = 1;
+    while(K){
+        if(K&1) ret = mul(ret, base);
+        base = mul(base, base);
+        K >>= 1;
     }
-    rep(i, 0, A.size()) cout << (ll)(A[i].real()+0.5) << ' ';
+    rep(i, 0, ret.size()){
+        if(ret[i]) cout << i << ' ';
+    }
     return;
 }
 

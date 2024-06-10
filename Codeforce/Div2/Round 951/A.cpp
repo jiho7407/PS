@@ -14,14 +14,25 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
+int N;
+vector<ll> lst;
+
 void solve(){
-    
+    cin >> N;
+    lst.resize(N);
+    rep(i, 0, N) cin >> lst[i];
+    ll ans = 1e15;
+    rep(i, 0, N-1){
+        ans = min(ans, max(lst[i], lst[i+1]));
+    }
+    cout << ans-1 << '\n';
+    return;
 }
 
 int main(){
     fastio();
     int tc = 1;
-    // cin >> tc;
+    cin >> tc;
     while(tc--){
         solve();
     }

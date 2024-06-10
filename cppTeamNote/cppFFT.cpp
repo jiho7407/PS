@@ -52,3 +52,20 @@ vector<cpd> mul(vector<cpd> &A, vector<cpd> &B){
     return A;
 }
 
+
+// 이런느낌으로도 사용가능
+vector<int> mul(const vector<int> &A, const vector<int> &B){
+    vector<cpd> AA(A.begin(), A.end()), BB(B.begin(), B.end());
+    int N = 1;
+    while(N < AA.size() + BB.size()) N <<= 1;
+    AA.resize(N); BB.resize(N);
+    FFT(AA, false); FFT(BB, false);
+    for(int i = 0; i<N; i++) AA[i] *= BB[i];
+    FFT(AA, true);
+    vector<int> ret(N);
+    rep(i, 0, N){
+        ret[i] = round(AA[i].real());
+        // if(ret[i]) ret[i] = 1;
+    }
+    return ret;
+}

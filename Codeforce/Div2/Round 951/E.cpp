@@ -14,14 +14,18 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
+int N, D;
+
+
 void solve(){
     
+    return;
 }
 
 int main(){
     fastio();
     int tc = 1;
-    // cin >> tc;
+    cin >> tc;
     while(tc--){
         solve();
     }

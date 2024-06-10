@@ -15,7 +15,12 @@ void fastio(){
 }
 
 void solve(){
-    
+    ll S; cin >> S;
+    ll ans = sqrt(S);
+    if(ans*ans >= S) cout << 2*ans;
+    else if(ans*(ans+1) >= S) cout << 2*ans+1;
+    else cout << 2*ans+2;
+    return;
 }
 
 int main(){
