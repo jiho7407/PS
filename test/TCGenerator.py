@@ -1,4 +1,5 @@
 from random import randint
+import random
 
 N = randint(5, 10)
 T = randint(5, 10)
