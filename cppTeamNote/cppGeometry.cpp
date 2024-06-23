@@ -78,3 +78,27 @@ ll rotating_calipers(){
     }
     return mx;
 }
+
+// point in Convex Hull
+pll toVec(pll a, pll b){
+    return {b.first-a.first, b.second-a.second};
+}
+
+ll ccw(pll va, pll vb){
+    return va.first*vb.second - va.second*vb.first;
+}
+
+bool inCvh(vector<pll> &cvh, ll x, ll y){
+    if(ccw(toVec(cvh[0], cvh[1]), toVec(cvh[0], {x, y})) < 0) return false;
+    if(ccw(toVec(cvh[0], cvh[cvh.size()-1]), toVec(cvh[0], {x, y})) > 0) return false;
+
+
+    int ok = 1, ng = cvh.size()-1;
+    while(ng-ok > 1){
+        ll mid = (ok+ng)/2;
+        if(ccw(toVec(cvh[0], cvh[mid]), toVec(cvh[0], {x, y})) > 0) ok = mid;
+        else ng = mid;
+    }
+
+    return ccw(toVec(cvh[ok], {x, y}), toVec({x, y}, cvh[ok+1])) < 0;
+}

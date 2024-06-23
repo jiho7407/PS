@@ -22,7 +22,7 @@ int main(){
     fastio();
     int tc = 1;
     // cin >> tc;
-    while(tc--){
+    rep(TC, 1, tc+1){
         solve();
     }
     return 0;

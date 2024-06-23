@@ -1,0 +1,133 @@
+right
+
+check_left:
+    pebble stack_left
+    jump end_left
+
+stack_left:
+    get
+    right
+    move
+    put
+    left
+    left
+    move
+    right
+    move
+    right
+    right
+    jump check_right
+
+check_right:
+    pebble stack_right
+    jump end_right
+
+stack_right:
+    get
+    left
+    move
+    put
+    right
+    right
+    move
+    left
+    move
+    left
+    left
+    jump check_left
+
+end_left:
+    move
+    right
+    move
+    right
+    right
+
+    pebble loopA
+    jump loopAend
+
+    loopA:
+        get
+        move
+        put
+        left
+        left
+        move
+        right
+        right
+        pebble loopA
+
+    loopAend:
+        move
+        left
+        move
+        left
+        move
+        left
+        left
+
+    pebble loopB
+    jump loopBend
+
+    loopB:
+        get
+        move
+        put
+        right
+        right
+        move
+        left
+        left
+        pebble loopB
+
+    loopBend:
+        move
+        halt
+
+end_right:
+    move
+    left
+    move
+    left
+    left
+
+    pebble loopC
+    jump loopCend
+
+    loopC:
+        get
+        move
+        put
+        right
+        right
+        move
+        left
+        left
+        pebble loopC
+    
+    loopCend:
+        move
+        right
+        move
+        right
+        move
+        right
+        right
+
+    pebble loopD
+    jump loopDend
+
+    loopD:
+        get
+        move
+        put
+        left
+        left
+        move
+        right
+        right
+        pebble loopD
+    
+    loopDend:
+        move
+        halt

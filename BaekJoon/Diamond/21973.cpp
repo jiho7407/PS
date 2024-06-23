@@ -63,44 +63,61 @@ struct Node{
         update();
     }
     void push(){
-
+        if(flip){
+            flip = false;
+            swap(l, r);
+            if(l) l->flip ^= 1;
+            if(r) r->flip ^= 1;
+        }
     }
 };
 
 void Splay(Node *x){
     while(!x->isRoot()){
-        if(!x->p->isRoot()) x->p->p->push();
-        x->p->push(); x->push();
-        if(x->p->isRoot()) continue;
-        if((x->p->l == x) == (x->p->p->l == x->p)) x->p->rotate();
-        else x->rotate();
+        Node *p = x->p;
+        if(!p->isRoot()) p->p->push(); p->push(); x->push();
+        if(!p->isRoot()){
+            if((p->l == x) == (p->p->l == p)) p->rotate();
+            else x->rotate();
+        }
         x->rotate();
     }
     x->push();
 }
 
-void Access(Node *x){
+Node* Access(Node *x){
     Splay(x); x->r = nullptr;
     x->update();
 
+    Node *last = x;
     while(x->p){
         Node *tmp = x->p;
+        last = tmp;
         Splay(tmp);
         tmp->r = x;
         tmp->update();
         Splay(x);
     }
+    return last;
 }
 
 void Link(Node *p, Node *c){
     Access(c); Access(p);
     c->l = p; p->p = c;
+    c->update();
 }
 
 void Cut(Node *x){
     Access(x);
     x->l->p = nullptr;
     x->l = nullptr;
+    x->update();
+}
+
+void MakeRoot(Node *x){
+    Access(x);
+    Splay(x);
+    x->flip ^= 1;
 }
 
 Node* FindRoot(Node *x){
@@ -127,10 +144,7 @@ ll GetDepth(Node *x){
 
 Node* GetLCA(Node *x, Node *y){
     Access(x);
-    Access(y);
-    Splay(x);
-    if(x->p) return x->p;
-    return x;
+    return Access(y);
 }
 
 ll GetSum(Node *x, Node *y){
@@ -146,7 +160,7 @@ ll GetSum(Node *x, Node *y){
 }
 
 void Update(Node *x, ll val){
-    Splay(x);
+    Access(x);
     x->update(val);
 }
 
@@ -165,9 +179,11 @@ void solve(){
         string op; ll a, b;
         cin >> op >> a >> b;
         if(op == "bridge"){
-            if(FindRoot(ptr[a]) == FindRoot(ptr[b])) cout << "no";
+            if(FindRoot(ptr[a]) == FindRoot(ptr[b])) cout << "no" << endl;
             else{
-                cout << "yes";
+                cout << "yes" << endl;
+                MakeRoot(ptr[a]);
+                MakeRoot(ptr[b]);
                 Link(ptr[a], ptr[b]);
             }
         }
@@ -175,10 +191,9 @@ void solve(){
             Update(ptr[a], b);
         }
         else{
-            if(FindRoot(ptr[a]) != FindRoot(ptr[b])) cout << "impossible\n";
-            else cout << GetSum(ptr[a], ptr[b]);
+            if(FindRoot(ptr[a]) != FindRoot(ptr[b])) cout << "impossible" << endl;
+            else cout << GetSum(ptr[a], ptr[b]) << endl;
         }
-        cout << endl;
     }
 }
 

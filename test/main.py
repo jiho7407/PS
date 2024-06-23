@@ -31,8 +31,10 @@ def compare_results(result1, result2):
     else:
         # print(f"result1:{result1}, result2: {result2}")
         print("WA")
-        # print(result1)
-        # print(result2)
+        print("----------------------")
+        print(result1)
+        print("----------------------")
+        print(result2)
         sys.exit()
 
 
@@ -43,15 +45,15 @@ if __name__ == "__main__":
         print("Input.txt 생성 완료", end=" ")
 
         # 파이썬 스크립트 실행
-        # python_result = run_python_script()
+        python_result = run_python_script()
 
         # C++ 프로그램 컴파일 및 실행
         cpp_result = run_cpp_program()
-        cpp_result2 = run_cpp_program2()
+        # cpp_result2 = run_cpp_program2()
 
         # 결과 비교
-        # compare_results(python_result, cpp_result)
-        compare_results(cpp_result, cpp_result2)
+        compare_results(python_result, cpp_result)
+        # compare_results(cpp_result, cpp_result2)
 
 """
 ifstream cin("D:\\Programming-D\\PS\\test\\input.txt");
