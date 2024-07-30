@@ -2,7 +2,7 @@
 #define ll long long
 #define lll __int128
 #define ld long double
-#define rep(i,l,r)for(ll i=(l);i<(r);i++)
+#define rep(i,l,r)for(int i=(l);i<(r);i++)
 using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
@@ -15,7 +15,7 @@ void fastio(){
 }
 
 void solve(){
-    
+
 }
 
 int main(){

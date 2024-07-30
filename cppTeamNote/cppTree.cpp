@@ -3,8 +3,8 @@ struct SegmentTree{
     vector<int> tree;
     int sz;
 
-    void pull(int node){
-        tree[node] = gcd(tree[node<<1], tree[node<<1|1]);
+    int pull(int a, int b){
+        return max(a, b);
     }
 
     void init(int N){
@@ -18,20 +18,20 @@ struct SegmentTree{
     }
 
     void build(){
-        for(int i = sz-1; i > 0; i--) pull(i);
+        for(int i = sz-1; i > 0; i--) tree[i] = pull(tree[i<<1], tree[i<<1|1]);
     }
 
     void update(int i, int x){
         int idx = sz + i;
         tree[idx] += x;
-        while(idx >>= 1) pull(idx);
+        while(idx >>= 1) tree[idx] = pull(tree[idx<<1], tree[idx<<1|1]);
     }
     int query(int L, int R){
         int left = L + sz, right = R + sz;
         int ret = 0;
         while(left <= right){
-            if((left&1)==1) ret = gcd(ret, tree[left++]);
-            if((right&1)==0) ret = gcd(ret, tree[right--]);
+            if((left&1)==1) ret = pull(ret, tree[left++]);
+            if((right&1)==0) ret = pull(ret, tree[right--]);
             left >>= 1; right >>= 1;
         }
         return ret;
@@ -41,25 +41,11 @@ struct SegmentTree{
 struct SegmentTree2D{
     vector<SegmentTree> ST;
     int sz;
-    void init(int N, int M, vector<vector<int>>& lst){
+    void init(int N, int M){
         sz = 1;
         while(sz < N) sz <<= 1;
         ST.resize(2*sz);
-        for(int i = 0; i<N; i++){
-            ST[sz+i].init(M, lst[i]);
-        }
-        vector<int> tmp(M, 0);
-        for(int i = N; i<sz; i++){
-            ST[sz+i].init(M, tmp);
-        }
-        for(int i = sz-1; i > 0; i--){
-            ST[i].init(M, tmp);
-            for(int j = 0; j < M; j++){
-                int q1 = ST[i<<1].query(j, j);
-                int q2 = ST[i<<1|1].query(j, j);
-                ST[i].update(j, max(q1, q2));
-            }
-        }
+        for(int i = 0; i < 2*sz; i++) ST[i].init(M);
     }
     void update(int i, int j, int x){
         int idx = sz + i;
@@ -81,8 +67,6 @@ struct SegmentTree2D{
         return ret;
     }
 };
-
-
 
 // Fenwick Tree
 // 펜윅트리는 1기반 인덱싱. 0 넣지 않게 조심
@@ -197,6 +181,42 @@ struct LazySegmentTree{
         return lq + rq;
     }
 };
+
+// 0-1 Setment Tree
+// 01 세그
+// 화성지도 세그
+struct SegmentTree01{
+    ll sz = 1;
+    vector<ll> tree, cnt;
+
+    void init(ll N){
+        while(sz < N) sz <<= 1;
+        tree.assign(sz<<1, 0);
+        cnt.assign(sz<<1, 0);
+    }
+
+    void update(ll s, ll e, ll v){
+        update(1, 0, sz-1, s, e, v);
+    }
+
+    void update(ll idx, ll ns, ll ne, ll s, ll e, ll v){
+        if(e < ns || ne < s) return;
+        if(s <= ns && ne <= e) tree[idx] += v;
+        else{
+            ll mid = (ns+ne)>>1;
+            update(idx<<1, ns, mid, s, e, v);
+            update(idx<<1|1, mid+1, ne, s, e, v);
+        }
+        // if(tree[idx] > 0) cnt[idx] = Ys[ne+1] - Ys[ns]; // 좌표압축된 경우, 업데이트는 update(y1, y2-1)
+        if(tree[idx] > 0) cnt[idx] = ne-ns+1;
+        else if (ns != ne) cnt[idx] = cnt[idx<<1] + cnt[idx<<1|1];
+        else cnt[idx] = 0;
+    }
+
+    ll query(){
+        return cnt[1];
+    }
+}ST;
 
 // Persistent Segment Tree
 // PST

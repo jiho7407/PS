@@ -1,5 +1,6 @@
 // 접미사 배열
-// Suffix Array
+// S[i:]의 사전순 정렬
+// NlogN
 
 struct SuffixArray{
     string S;
@@ -82,7 +83,7 @@ pii get_bound(int SA[],string T){
 }
 
 // 매내쳐
-// Manacher
+// S[i]를 중심으로 하는 가장 긴 팰린드롬의 반지름
 const int mxN = 5e6;
 struct Manacher{
     int N, r = 0, p = 0;
@@ -106,6 +107,27 @@ struct Manacher{
                 r = i+A[i];
                 p = i;
             }
+        }
+    }
+};
+
+
+// Z 배열
+// S와 S[i:]의 최장 공통 접두사 길이
+struct Zarray{
+    string S;
+    int N;
+    int Z[1000000];
+
+    Zarray(string S): S(S){
+        N = S.size();
+        Z[0] = N;
+        int l = 0, r = 0;
+        rep(i, 1, N){
+            if(i <= r) Z[i] = min(Z[i-l], r-i);
+            while(i+Z[i] < N && S[Z[i]] == S[i+Z[i]]) Z[i]++;
+            if(i>r) l = i;
+            r = max(r, i+Z[i]-1);
         }
     }
 };

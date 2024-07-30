@@ -2,7 +2,7 @@
 #define ll long long
 #define lll __int128
 #define ld long double
-#define rep(i,l,r)for(ll i=(l);i<(r);i++)
+#define rep(i,l,r)for(int i=(l);i<(r);i++)
 using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
@@ -14,126 +14,123 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-struct Node{
-    int sz;
-    Node *l, *r;
-    Node(){
-        sz = 0;
-        l = r = nullptr;
-    }
-
-    Node(int sz): sz(sz), l(nullptr), r(nullptr){}
-};
-
-struct PersistentSegmentTree{
-    Node *root[500001]; 
-
-    void build(Node *node, int S, int E){
-        if(S == E) return;
-        int M = (S+E)>>1;
-        node->l = new Node();
-        node->r = new Node();
-        build(node->l, S, M);
-        build(node->r, M+1, E);
-    }
-
-    void update(int idx, int X, int V){
-        root[idx] = new Node();
-        update(root[idx-1], root[idx], 0, 524287, X, V);
-    }
-
-    void update(Node *prv, Node *cur, int S, int E, int X, int V){
-        if(X < S || E < X) return;
-        if(S == E){
-            cur->sz = prv->sz + 1;
-            return;
-        }
-
-        int M = (S+E)>>1;
-        if(X <= M){
-            cur->r = prv->r;
-            cur->l = new Node(prv->l->sz + 1);
-            update(prv->l, cur->l, S, M, X, V);
-        }else{
-            cur->l = prv->l;
-            cur->r = new Node(prv->r->sz + 1);
-            update(prv->r, cur->r, M+1, E, X, V);
-        }
-        cur->sz = cur->l->sz + cur->r->sz;
-    }
-
-    int query2(Node *prv, Node *cur, int S, int E, int X, int bit){
-        if(S==E) return S;
-        // cout << S << ' ' << E << ' ' << X << ' ' << bit << ' ' << cur->l->sz - prv->l->sz << ' ' << cur->r->sz - prv->r->sz << endl;
-        int M = (S+E)>>1;
-        if((X>>bit)&1){
-            if(cur->l->sz - prv->l->sz) return query2(prv->l, cur->l, S, M, X, bit-1);
-            else return query2(prv->r, cur->r, M+1, E, X, bit-1);
-        }
-        else{
-            if(cur->r->sz - prv->r->sz) return query2(prv->r, cur->r, M+1, E, X, bit-1);
-            else return query2(prv->l, cur->l, S, M, X, bit-1);
-        }
-    }
-
-    int query4(Node *prv, Node *cur, int S, int E, int X){
-        // cout << S << ' ' << E << ' ' << X << ' ' << cur->sz - prv->sz << endl;
-        if(X < S) return 0;
-        if(E <= X) return cur->sz - prv->sz;
-        int M = (S+E)>>1;
-        return query4(prv->l, cur->l, S, M, X) + query4(prv->r, cur->r, M+1, E, X);
-    }
-
-    int query5(Node *prv, Node *cur, int S, int E, int X){
-        if(S == E) return S;
-        int M = (S+E)>>1;
-        int diff = cur->l->sz - prv->l->sz;
-        if(X <= diff) return query5(prv->l, cur->l, S, M, X);
-        else return query5(prv->r, cur->r, M+1, E, X-diff);
-    }
-};
-
-int M;
-PersistentSegmentTree PST;
+ifstream cinn("D:\\Programming-D\\PS\\test\\input.txt");
+int N;
+int A[50000];
 
 void solve(){
-    ifstream cin("D:\\Programming-D\\PS\\test\\input.txt");
-    cin >> M;
-    PST.root[0] = new Node();
-    PST.build(PST.root[0], 0, 524287);
-    int idx = 1;
-    rep(i, 0, M){
-        int op; cin >> op;
-        if(op == 1) {
-            int x; cin >> x;
-            PST.update(idx, x, 1);
-            idx++;
+    cinn >> N;
+    rep(i, 0, N) cinn >> A[i];
+    int mn = *min_element(A, A+N), mx = *max_element(A, A+N);
+
+    // 모두 같은 숫자인 경우
+    if(mn == mx){
+        cout << 0 << '\n';
+        return;
+    }
+
+    // 0회로 끝낼 수 있는 경우
+    int mncnt = 0, mxcnt = 0;
+    rep(i, 0, N){
+        if(A[i] == mn) mncnt++;
+        if(A[i] == mx) mxcnt++;
+    }
+    if(N%2){ // 홀수일때는 N/2, N/2+1
+        if(min(mncnt, mxcnt) == N/2 && max(mncnt, mxcnt) == N/2+1){
+            cout << 0 << '\n';
+            return;
         }
-        else if(op == 2){
-            int L, R, x; cin >> L >> R >> x;
-            cout << PST.query2(PST.root[L-1], PST.root[R], 0, 524287, x, 18) << '\n';
+    }
+    else{ // 짝수일때는 N/2, N/2
+        if(mncnt == N/2 && mxcnt == N/2){
+            cout << 0 << '\n';
+            return;
         }
-        else if(op == 3){
-            int x; cin >> x;
-            idx -= x;
+    }
+
+    // 1회로 끝낼 수 있는 경우
+    // 5 2 1 5 5 1 모양 어떻게 처리해야할까?
+    vector<int> notmnmx;
+    rep(i, 0, N){
+        if(A[i] != mn && A[i] != mx) notmnmx.push_back(i);
+    }
+    
+    // 가운데에 mn쿼리 치기
+    if(mxcnt >= N/2){
+        int inmncnt = 0, inmxcnt = 0;
+        int l = 0, r = -1;
+        while(l < N){
+            if(!notmnmx.empty() && notmnmx[0] < l) break;
+            while(r < N-1){
+                if(A[r+1] == mx && mxcnt - (inmxcnt+1) < N/2) break;
+                r++;
+                if(A[r] == mn) inmncnt++;
+                if(A[r] == mx) inmxcnt++;
+            }
+            if(inmncnt && (notmnmx.empty() || notmnmx.back() <= r)){
+                cout << 1 << '\n';
+                cout << 1 << ' ' << l+1 << ' ' << r+1 << '\n';
+                return;
+            }
+            if(A[l] == mn) inmncnt--;
+            if(A[l] == mx) inmxcnt--;
+            l++;
         }
-        else if(op == 4){
-            int L, R, x; cin >> L >> R >> x;
-            cout << PST.query4(PST.root[L-1], PST.root[R], 0, 524287, x) << '\n';
+    }
+    // 가운데에 mx쿼리 치기
+    if(mncnt >= N/2){
+        int inmncnt = 0, inmxcnt = 0;
+        int l = 0, r = -1;
+        while(l < N){
+            if(!notmnmx.empty() && notmnmx[0] < l) break;
+            while(r < N-1){
+                if(A[r+1] == mn && mncnt - (inmncnt+1) < N/2) break;
+                r++;
+                if(A[r] == mn) inmncnt++;
+                if(A[r] == mx) inmxcnt++;
+            }
+            if(inmxcnt && (notmnmx.empty() || notmnmx.back() <= r)){
+                cout << 1 << '\n';
+                cout << 2 << ' ' << l+1 << ' ' << r+1 << '\n';
+                return;
+            }
+            if(A[l] == mn) inmncnt--;
+            if(A[l] == mx) inmxcnt--;
+            l++;
         }
-        else if(op == 5){
-            int L, R, x; cin >> L >> R >> x;
-            cout << PST.query5(PST.root[L-1], PST.root[R], 0, 524287, x) << '\n';
-        }
-        else assert(false);
+    }
+
+    // 2회로 끝낼 수 있는 경우
+    int mnidx = -1, mxidx = -1;
+    rep(i, 0, N){
+        if(A[i] == mn) mnidx = i;
+        if(A[i] == mx) mxidx = i;
+    }
+
+    bool mnmx = (mnidx < mxidx);
+    int idx1 = min(mnidx, mxidx), idx2 = max(mnidx, mxidx);
+    
+    cout << 2 << '\n';
+    if(idx2 < N/2){ // 왼쪽에 몰려있는 경우
+        cout << (mnmx? 2 : 1) << ' ' << idx2+1 << ' ' << N << '\n';
+        cout << (mnmx? 1 : 2) << ' ' << 1 << ' ' << N/2 << '\n';
+    }
+    else if(N/2 <= idx1){ // 오른쪽에 몰려있는 경우
+        cout << (mnmx? 1 : 2) << ' ' << 1 << ' ' << idx1+1 << '\n';
+        cout << (mnmx? 2 : 1) << ' ' << N/2+1 << ' ' << N << '\n';
+    }
+    else{ // 양쪽으로 나눠진경우
+        cout << (mnmx? 1 : 2) << ' ' << 1 << ' ' << N/2 << '\n';
+        cout << (mnmx? 2 : 1) << ' ' << N/2+1 << ' ' << N << '\n';
     }
 }
 
 int main(){
     fastio();
     int tc = 1;
-    // cin >> tc;
+    cinn >> tc;
     rep(TC, 1, tc+1){
+        cout << "Case #" << TC << '\n';
         solve();
     }
     return 0;
