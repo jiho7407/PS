@@ -1,6 +1,5 @@
 // 유파
 // 분리집합
-
 struct UnionFind{
     int par[1000], cnt[1000];
     int group;

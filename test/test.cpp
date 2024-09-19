@@ -1,137 +1,50 @@
-#include <bits/stdc++.h>
-#define ll long long
-#define lll __int128
-#define ld long double
-#define rep(i,l,r)for(int i=(l);i<(r);i++)
+#include <iostream>
+#include <vector>
+
 using namespace std;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
 
+using ll = long long;
 
-void fastio(){
-    cin.tie(0);
-    cout.tie(0);
-    ios_base::sync_with_stdio(false);
+int binpow(ll a, ll b, ll p) {
+  ll c = 1;
+  while(b) {
+    if (b & 1) c = c * a % p;
+    a = a * a % p, b >>= 1;
+  }
+  return c;
 }
 
-ifstream cinn("D:\\Programming-D\\PS\\test\\input.txt");
-int N;
-int A[50000];
+int main() {
+  int t; cin >> t;
+  while(t--) {
+    int n, k, p; cin >> n >> k >> p;
 
-void solve(){
-    cinn >> N;
-    rep(i, 0, N) cinn >> A[i];
-    int mn = *min_element(A, A+N), mx = *max_element(A, A+N);
+    vector<ll> fac(k + 1, 1);
+    for(int i = 1; i <= k; i++) fac[i] = fac[i - 1] * i % p;
 
-    // 모두 같은 숫자인 경우
-    if(mn == mx){
-        cout << 0 << '\n';
-        return;
-    }
+    vector<ll> faci(k + 1);
+    faci[k] = binpow(fac[k], p - 2, p);
+    for(int i = k - 1; i >= 0; i--) faci[i] = faci[i + 1] * (i + 1) % p;
 
-    // 0회로 끝낼 수 있는 경우
-    int mncnt = 0, mxcnt = 0;
-    rep(i, 0, N){
-        if(A[i] == mn) mncnt++;
-        if(A[i] == mx) mxcnt++;
-    }
-    if(N%2){ // 홀수일때는 N/2, N/2+1
-        if(min(mncnt, mxcnt) == N/2 && max(mncnt, mxcnt) == N/2+1){
-            cout << 0 << '\n';
-            return;
-        }
-    }
-    else{ // 짝수일때는 N/2, N/2
-        if(mncnt == N/2 && mxcnt == N/2){
-            cout << 0 << '\n';
-            return;
-        }
-    }
+    vector<ll> pow2(n + 1, 1);
+    for(int i = 1; i <= n; i++) pow2[i] = pow2[i - 1] * 2 % p;
 
-    // 1회로 끝낼 수 있는 경우
-    // 5 2 1 5 5 1 모양 어떻게 처리해야할까?
-    vector<int> notmnmx;
-    rep(i, 0, N){
-        if(A[i] != mn && A[i] != mx) notmnmx.push_back(i);
-    }
-    
-    // 가운데에 mn쿼리 치기
-    if(mxcnt >= N/2){
-        int inmncnt = 0, inmxcnt = 0;
-        int l = 0, r = -1;
-        while(l < N){
-            if(!notmnmx.empty() && notmnmx[0] < l) break;
-            while(r < N-1){
-                if(A[r+1] == mx && mxcnt - (inmxcnt+1) < N/2) break;
-                r++;
-                if(A[r] == mn) inmncnt++;
-                if(A[r] == mx) inmxcnt++;
-            }
-            if(inmncnt && (notmnmx.empty() || notmnmx.back() <= r)){
-                cout << 1 << '\n';
-                cout << 1 << ' ' << l+1 << ' ' << r+1 << '\n';
-                return;
-            }
-            if(A[l] == mn) inmncnt--;
-            if(A[l] == mx) inmxcnt--;
-            l++;
-        }
-    }
-    // 가운데에 mx쿼리 치기
-    if(mncnt >= N/2){
-        int inmncnt = 0, inmxcnt = 0;
-        int l = 0, r = -1;
-        while(l < N){
-            if(!notmnmx.empty() && notmnmx[0] < l) break;
-            while(r < N-1){
-                if(A[r+1] == mn && mncnt - (inmncnt+1) < N/2) break;
-                r++;
-                if(A[r] == mn) inmncnt++;
-                if(A[r] == mx) inmxcnt++;
-            }
-            if(inmxcnt && (notmnmx.empty() || notmnmx.back() <= r)){
-                cout << 1 << '\n';
-                cout << 2 << ' ' << l+1 << ' ' << r+1 << '\n';
-                return;
-            }
-            if(A[l] == mn) inmncnt--;
-            if(A[l] == mx) inmxcnt--;
-            l++;
-        }
-    }
+    vector<ll> dp(k + 1, 1);
+    for(int i = 1; i < n; i++) {
+      vector<ll> binom(k + 1, 1);
+      for(int j = 1; j <= k; j++) binom[j] = binom[j - 1] * (pow2[i] + j - 2 + p) % p;
+      for(int j = 0; j <= k; j++) binom[j] = binom[j] * faci[j] % p;
 
-    // 2회로 끝낼 수 있는 경우
-    int mnidx = -1, mxidx = -1;
-    rep(i, 0, N){
-        if(A[i] == mn) mnidx = i;
-        if(A[i] == mx) mxidx = i;
-    }
+      vector<ll> nxt(k + 1);
+      for(int j = 0; j <= k; j++)
+        for(int x = 0; x < j and j + x <= k; x++)
+          nxt[j + x] = (nxt[j + x] + dp[j] * binom[x] % p) % p;
 
-    bool mnmx = (mnidx < mxidx);
-    int idx1 = min(mnidx, mxidx), idx2 = max(mnidx, mxidx);
-    
-    cout << 2 << '\n';
-    if(idx2 < N/2){ // 왼쪽에 몰려있는 경우
-        cout << (mnmx? 2 : 1) << ' ' << idx2+1 << ' ' << N << '\n';
-        cout << (mnmx? 1 : 2) << ' ' << 1 << ' ' << N/2 << '\n';
-    }
-    else if(N/2 <= idx1){ // 오른쪽에 몰려있는 경우
-        cout << (mnmx? 1 : 2) << ' ' << 1 << ' ' << idx1+1 << '\n';
-        cout << (mnmx? 2 : 1) << ' ' << N/2+1 << ' ' << N << '\n';
-    }
-    else{ // 양쪽으로 나눠진경우
-        cout << (mnmx? 1 : 2) << ' ' << 1 << ' ' << N/2 << '\n';
-        cout << (mnmx? 2 : 1) << ' ' << N/2+1 << ' ' << N << '\n';
-    }
-}
+      for(int j = 1; j <= k; j++)
+        nxt[j] = (nxt[j - 1] + nxt[j]) % p;
+      dp.swap(nxt);
 
-int main(){
-    fastio();
-    int tc = 1;
-    cinn >> tc;
-    rep(TC, 1, tc+1){
-        cout << "Case #" << TC << '\n';
-        solve();
+      for(int i = 0; i<=10; i++) cout << binom[i] << ' '; cout << '\n';
     }
-    return 0;
+  }
 }
