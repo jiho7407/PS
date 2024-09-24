@@ -5,11 +5,7 @@
 #define ll long long
 #define lll __int128
 #define ld long double
-<<<<<<< HEAD
-#define rep(i,l,r)for(int i=(l);i<(r);i++)
-=======
 #define rep(i,l,r)for(ll i=(l);i<(r);i++)
->>>>>>> 925a44fd120d8322361d61e5819d20ff75e8d433
 using namespace std;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
@@ -21,50 +17,6 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-<<<<<<< HEAD
-const ll mxK = 5e6+1;
-const ll mod = 1e9+7;
-const ll nmod = 1e10;
-
-struct Xudyh{
-    ll mu[mxK], SP[mxK];
-    unordered_map<ll, ll> mp[11];
-
-    void init(){
-        fill(mu, mu+mxK, 0);
-        fill(SP, SP+mxK, 0);
-        mu[1] = 1;
-        rep(i, 1, mxK){
-            for(ll j = i*2; j < mxK; j += i){
-                mu[j] -= mu[i];
-                if(mu[j] < 0) mu[j] += mod;
-            }
-            SP[i] = (SP[i-1] + mu[i]*i%mod)%mod;
-            if(SP[i] < 0) SP[i] += mod;
-        }
-    }
-
-    ll ss(ll N){
-        N %= mod;
-        ll ret = N*(N+1)%mod;
-        if(ret&1) return (ret+mod)/2;
-        return ret/2;
-    }
-
-    ll getSP(ll N){
-        if(N < mxK) return SP[N];
-        ll q = N/nmod, r = N%nmod;
-        if(mp[q].count(r)) return mp[q][r];
-
-        ll ret = 1;
-        for(ll i = 2, j; i<=N; i=j+1){
-            j = N/(N/i);
-            ll tmp = (ss(j) - ss(i-1) + mod)%mod;
-            ret -= tmp*getSP(N/i)%mod;
-            if(ret < 0) ret += mod;
-        }
-        return mp[q][r] = ret;
-=======
 
 const ll mxK = 1e7+1;
 const ll mod = 1e9+7;
@@ -121,7 +73,6 @@ struct Xudyh{
             if(ret < 0) ret += mod;
         }
         return mp[N] = ret;
->>>>>>> 925a44fd120d8322361d61e5819d20ff75e8d433
     }
 }Xudyh;
 
@@ -134,11 +85,7 @@ void solve(){
         ll ni = N/i;
         j = N/ni;
         ni %= mod;
-<<<<<<< HEAD
-        ll ret = (Xudyh.getSP(j) - Xudyh.getSP(i-1)+mod)%mod;
-=======
         ll ret = (Xudyh.SF(j) - Xudyh.SF(i-1)+mod)%mod;
->>>>>>> 925a44fd120d8322361d61e5819d20ff75e8d433
         ret = ret*ni%mod;
         ret = ret*ni%mod;
         ret = ret*(ni+1)%mod;

@@ -95,20 +95,20 @@ struct Fenwick{
 struct Fenwick2D{
     vector<vector<ll>> tree;
     Fenwick2D(int n, int m){
-        tree.resize(n+1, vector<ll>(m+1));
+        tree.assign(n+1, vector<ll>(m+1, 1e9));
     }
     void update(int x, int y, ll diff){
         for(int i = x; i < tree.size(); i += (i & -i)){
             for(int j = y; j < tree[i].size(); j += (j & -j)){
-                tree[i][j] += diff;
+                tree[i][j] = min(tree[i][j], diff);
             }
         }
     }
     ll query(int x, int y){
-        ll ret = 0;
+        ll ret = 1e9;
         for(int i = x; i > 0; i -= (i & -i)){
             for(int j = y; j > 0; j -= (j & -j)){
-                ret += tree[i][j];
+                ret = min(ret, tree[i][j]);
             }
         }
         return ret;
