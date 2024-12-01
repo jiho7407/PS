@@ -8,8 +8,7 @@ def generate_input():
 
 
 def run_python_script():
-    result = subprocess.run(["python", "test.py"],
-                            capture_output=True, text=True)
+    result = subprocess.run(["python", "test.py"], capture_output=True, text=True)
     return result.stdout.strip()
 
 
