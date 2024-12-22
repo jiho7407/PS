@@ -14,23 +14,22 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-int H, W;
-int board[10][10];
-
 void solve(){
-    cin >> H >> W;
-    rep(i, 0, H) rep(j, 0, W) cin >> board[i][j];
-
-    while(1){
-        bool flag = false;
-        rep(i, 0, H) rep(j, 0, W) if(board[i][j]) 
+    ll N, K; cin >> N >> K;
+    vector<ll> v(N);
+    rep(i, 0, N) cin >> v[i];
+    sort(v.begin(), v.end());
+    ll mx = 0;
+    rep(i, 1, N){
+        mx = max(mx, v[0]*i + v[i]*(N-i));
     }
+    cout << (K-1)/mx + 1;
 }
 
 int main(){
     fastio();
     int tc = 1;
-    cin >> tc;
+    // cin >> tc;
     rep(TC, 1, tc+1){
         solve();
     }
