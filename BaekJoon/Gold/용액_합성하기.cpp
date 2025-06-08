@@ -21,8 +21,21 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-void solve(){
+int N;
+vector<int> A;
 
+void solve(){
+    cin >> N;
+    A.resize(N);
+    rep(i, 0, N) cin >> A[i];
+
+    int mx = INT_MAX;
+    rep(i, 0, N){
+        int j = lower_bound(A.begin(), A.end(), -A[i]) - A.begin();
+        if(j < N && j != i) if(abs(A[i] + A[j]) < abs(mx)) mx = A[i] + A[j];
+        if(j > 0 && (j-1) != i) if(abs(A[i] + A[j-1]) < abs(mx)) mx = A[i] + A[j-1];
+    }
+    cout << mx << '\n';
 }
 
 int main(){

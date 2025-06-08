@@ -22,7 +22,24 @@ void fastio(){
 }
 
 void solve(){
-
+    int N; cin >> N;
+    int ans = 0;
+    while(N--){
+        string S; cin >> S;
+        vector<bool> vis(26, false);
+        bool flag = true;
+        rep(i, 0, S.size()){
+            int idx = S[i] - 'a';
+            if(vis[idx]){
+                flag = false;
+                break;
+            }
+            vis[idx] = true;
+            while(i+1 < S.size() && S[i] == S[i+1]) i++;
+        }
+        if(flag) ans++;
+    }
+    cout << ans << '\n';
 }
 
 int main(){

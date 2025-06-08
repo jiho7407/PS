@@ -21,8 +21,22 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-void solve(){
+int N, M;
+int A[101];
 
+int calc(int idx, int val, int time){
+    if(time == M) return val;
+    if(idx == N) return val;
+    int ret = val;
+    if(idx+1 <= N) ret = max(ret, calc(idx+1, val+A[idx+1], time+1));
+    if(idx+2 <= N) ret = max(ret, calc(idx+2, val/2 + A[idx+2], time+1));
+    return ret;
+}
+
+void solve(){
+    cin >> N >> M;
+    rep(i, 1, N+1) cin >> A[i];
+    cout << calc(0, 1, 0) << '\n';
 }
 
 int main(){

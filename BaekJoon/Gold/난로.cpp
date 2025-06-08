@@ -21,8 +21,20 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-void solve(){
+int N, K;
+int T[100000];
 
+void solve(){
+    cin >> N >> K;
+    rep(i, 0, N) cin >> T[i];
+    priority_queue<int, vector<int>, greater<int>> pq;
+    rep(i, 0, N-1) pq.push(T[i+1] - T[i]);
+    int ans = K;
+    rep(i, 0, N-K){
+        ans += pq.top();
+        pq.pop();
+    }
+    cout << ans << '\n';
 }
 
 int main(){
