@@ -14,26 +14,27 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-vector<int> links[100000];
-vector<tuple<int, int, int>> ans;
-map<pii, bool> used;
-
 void solve(){
     int N, M; cin >> N >> M;
-    rep(i, 0, M){
-        int a, b; cin >> a >> b;
-        a--; b--;
-        links[a].push_back(b);
-        links[b].push_back(a);
+    vector<int> v1, v2;
+    while(N--){
+        int a; cin >> a;
+        v1.push_back(a);
     }
-
-    dfs(0, -1);
+    while(M--){
+        int a; cin >> a;
+        v2.push_back(a);
+    }
+    sort(v1.begin(), v1.end(), greater<int>());
+    sort(v2.begin(), v2.end(), greater<int>());
+    if(v1[0] >= v2[0]) cout << "S\n";
+    else cout << "B\n";
 }
 
 int main(){
     fastio();
     int tc = 1;
-    // cin >> tc;
+    cin >> tc;
     rep(TC, 1, tc+1){
         solve();
     }

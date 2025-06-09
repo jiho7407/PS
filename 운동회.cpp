@@ -14,20 +14,12 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-vector<int> links[100000];
-vector<tuple<int, int, int>> ans;
-map<pii, bool> used;
-
 void solve(){
-    int N, M; cin >> N >> M;
-    rep(i, 0, M){
-        int a, b; cin >> a >> b;
-        a--; b--;
-        links[a].push_back(b);
-        links[b].push_back(a);
-    }
-
-    dfs(0, -1);
+    ll N, M, A, K;
+    cin >> N >> M >> A >> K;
+    ll mn = (A-K)/M + 2;
+    ll mx = min(N, A);
+    cout << mx << " " << mn;
 }
 
 int main(){

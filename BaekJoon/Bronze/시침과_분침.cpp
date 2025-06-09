@@ -14,20 +14,24 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-vector<int> links[100000];
-vector<tuple<int, int, int>> ans;
-map<pii, bool> used;
+bool ans[360];
 
 void solve(){
-    int N, M; cin >> N >> M;
-    rep(i, 0, M){
-        int a, b; cin >> a >> b;
-        a--; b--;
-        links[a].push_back(b);
-        links[b].push_back(a);
+    rep(i, 0, 1440){
+        int h = i/60;
+        int m = i%60;
+        if(m%2) continue;
+        int hang = h*30 + m/2;
+        int mang = m*5;
+        cout << hang << ' ' << mang << '\n';
+        int ang = abs(hang-mang);
+        ans[ang] = 1;
+        ans[360-ang] = 1;
     }
-
-    dfs(0, -1);
+    int N;
+    while(cin >> N){
+        cout << (ans[N] ? "Y\n" : "N\n");
+    }
 }
 
 int main(){

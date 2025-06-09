@@ -14,20 +14,27 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-vector<int> links[100000];
-vector<tuple<int, int, int>> ans;
-map<pii, bool> used;
+bool cube[5][5][5];
 
 void solve(){
     int N, M; cin >> N >> M;
     rep(i, 0, M){
-        int a, b; cin >> a >> b;
-        a--; b--;
-        links[a].push_back(b);
-        links[b].push_back(a);
+        int x, y, z; cin >> x >> y >> z;
+        x--; y--; z--;
+        cube[x][y][z] = 1;
     }
-
-    dfs(0, -1);
+    int ans = 0;
+    rep(i, 1, N-1) rep(j, 1, N-1) rep(k, 1, N-1){
+        if(!cube[i][j][k]) continue;
+        if(!cube[i-1][j][k]) continue;
+        if(!cube[i+1][j][k]) continue;
+        if(!cube[i][j-1][k]) continue;
+        if(!cube[i][j+1][k]) continue;
+        if(!cube[i][j][k-1]) continue;
+        if(!cube[i][j][k+1]) continue;
+        ans++;
+    }
+    cout << ans;
 }
 
 int main(){

@@ -14,20 +14,25 @@ void fastio(){
     ios_base::sync_with_stdio(false);
 }
 
-vector<int> links[100000];
-vector<tuple<int, int, int>> ans;
-map<pii, bool> used;
+int DP[505][505];
+
+int calc(int n, int k){
+    if(n <= 0) return 0;
+    if(k <= 0) return 1e9;
+    if(DP[n][k] != -1) return DP[n][k];
+    DP[n][k] = 1e9;
+    rep(i, 1, n+1){
+        int ret = max(calc(i-1, k-1), calc(n - i, k)) + 1;
+        DP[n][k] = min(DP[n][k], ret);
+    }
+    return DP[n][k];
+}
+
 
 void solve(){
-    int N, M; cin >> N >> M;
-    rep(i, 0, M){
-        int a, b; cin >> a >> b;
-        a--; b--;
-        links[a].push_back(b);
-        links[b].push_back(a);
-    }
-
-    dfs(0, -1);
+    int N, K; cin >> N >> K;
+    rep(i, 0, N+1) rep(j, 0, K+1) DP[i][j] = -1;
+    cout << calc(N, K);
 }
 
 int main(){
