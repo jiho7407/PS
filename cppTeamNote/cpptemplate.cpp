@@ -8,6 +8,7 @@
 #include <bits/stdc++.h>
 #define rep(i, l, r) for(int i = l; i < r; i++)
 #define rrep(i, r, l) for(int i = r-1; i >= l; i--)
+#define all(x) x.begin(), x.end()
 using namespace std;
 using ll = long long;
 using ld = long double;
